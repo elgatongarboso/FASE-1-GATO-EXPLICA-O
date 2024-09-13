@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gato Falante Interativo</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        #texto {
+            font-size: 18px;
+            margin-right: 20px;
+            width: 300px;
+        }
+        #imagem {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        #botao-proxima-pagina {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #botao-proxima-pagina:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div id="texto"></div>
+        <img id="imagem" src="" alt="Gato falante">
+    </div>
+    
+    <button id="botao-proxima-pagina" onclick="irParaProximaPagina()">Próxima Página</button>
+
+    <script>
+        const textos = [
+            "VOCE VENCEU O JOGO DA MEMORIA MESMO HEIN? EU PENSEI QUE NAO IA CONSEGUIR KKKKKKKKKK... PENSEI QUE IA DESISTIR NA VERDADE :3",
+            "MAS MEU COELHITO É MUITO HABILIDOSO * -*",
+            "MAS SE EU FIZ AS OUTRAS FASES É PORQUE DE CERTA FORMA EU AINDA ACREDITAVA QUE IA CONSEGUIR :3",
+            "AGORA NESSA FASE SEGUINTE, ELA É DIFERENTE, ENTAO VOU TER QUE TE EXPLICAR ALGUMAS COISAS",
+            "VOCÊ VAI APARECER DENTRO DE UMA AREA, ESSA AREA É CERCADA E NAO DA PRA SAIR DE LA. O SEU OBJETIVO É CONSEGUIR 50 PONTOS SE NAO ME ENGANO. MAS EU VOU TENTAR TE ATRAPALHAR :3... Ah, outra coisa, se você clicar em você mesma, seu coelho fica parado, ai voce pode se defender melhor assim, se você clicar novamente em você, você pode voltar a andar novamente.",
+            "EU VOU FICAR JOGANDO PEIXES POR AI, E ESSES PEIXES VAO TENTAR TE MORDER :3... CADA PEIXE TIRA 1 DE VIDA SEU E VOCE TEM APENAS 5... CONSIGA OS 50 PONTOS E VOCE GANHA O JOGO.... E PARA TE AJUDAR VAI APARECER ALGUMAS CENOURITAS PELO MAPA QUE VAO TE DAR 10 PONTOS CASO CONSIGA PEGALAS :3... BOA SORTE * -*"
+        ];
+        const imagemSrc = "https://files.catbox.moe/jy0uut.png"; // Insira o URL da imagem do gato aqui
+        const somSrc = "https://files.catbox.moe/eoyep4.wav"; // Insira o URL do som das letras aqui
+
+        const textoElement = document.getElementById('texto');
+        const imagemElement = document.getElementById('imagem');
+        const containerElement = document.getElementById('container');
+        let indiceTextoAtual = 0;
+        let indiceLetraAtual = 0;
+        let animacaoEmProgresso = false;
+        let timeoutId = null;
+
+        imagemElement.src = imagemSrc;
+
+        function animarTexto() {
+            if (indiceLetraAtual < textos[indiceTextoAtual].length) {
+                textoElement.innerHTML += textos[indiceTextoAtual].charAt(indiceLetraAtual);
+                reproduzirSom();
+                animarImagem();
+                
+                if (textos[indiceTextoAtual].charAt(indiceLetraAtual) === '.') {
+                    timeoutId = setTimeout(animarTexto, 500); // Pausa de 500ms após um ponto final
+                } else {
+                    timeoutId = setTimeout(animarTexto, 50); // Velocidade normal de digitação
+                }
+                
+                indiceLetraAtual++;
+                animacaoEmProgresso = true;
+            } else {
+                animacaoEmProgresso = false;
+            }
+        }
+
+        function reproduzirSom() {
+            const audio = new Audio(somSrc);
+            audio.play();
+        }
+
+        function animarImagem() {
+            imagemElement.style.transform = `translateY(${Math.random() * 5 - 2.5}px)`;
+            setTimeout(() => {
+                imagemElement.style.transform = 'translateY(0)';
+            }, 25);
+        }
+
+        function irParaProximaPagina() {
+            // Substitua 'URL_DA_PROXIMA_PAGINA' pelo URL da próxima página
+            window.location.href = 'URL_DA_PROXIMA_PAGINA';
+        }
+
+        function avancarOuPularTexto() {
+            if (animacaoEmProgresso) {
+                // Se a animação estiver em progresso, pular para o final do texto atual
+                clearTimeout(timeoutId);
+                textoElement.innerHTML = textos[indiceTextoAtual];
+                animacaoEmProgresso = false;
+                indiceLetraAtual = textos[indiceTextoAtual].length;
+            } else {
+                // Se a animação tiver terminado, avançar para o próximo texto
+                indiceTextoAtual = (indiceTextoAtual + 1) % textos.length;
+                textoElement.innerHTML = '';
+                indiceLetraAtual = 0;
+                animarTexto();
+            }
+        }
+
+        containerElement.addEventListener('click', avancarOuPularTexto);
+
+        // Iniciar a primeira animação
+        animarTexto();
+    </script>
+</body>
+</html>
